@@ -29,17 +29,6 @@ echo "Setting up Git configuration"
 curl -s https://gist.githubusercontent.com/killedbymemory/753b50bd053808936fa18516e0b6f44f/raw/58887028007dd4f539abef8221dbdbf334332679/.gitconfig -o ~/.gitconfig
 
 
-## ZSH
-echo "Installing ZSH"
-sudo apt -y install zsh
-
-## oh-my-zsh
-## See: https://github.com/robbyrussell/oh-my-zsh#basic-installation
-echo "Installing oh-my-zsh"
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
-echo "Remember to enable oh-my-zsh plugins in ~/.zshrc!"
-
-
 ## Vundle && Vim && Install plugins from CLI
 ## See: https://github.com/VundleVim/Vundle.vim
 echo "Setting up Vundle"
@@ -91,3 +80,14 @@ sudo usermod -aG docker $USER
 ## Test docker installation
 echo "Test Docker installation"
 sudo docker run --rm hello-world && echo "Docker successfully installed and tested"
+
+
+## ZSH
+echo "Installing ZSH"
+sudo apt -y install zsh
+
+## oh-my-zsh (should be installed last since it change shell to zsh and stop the bash script execution)
+## See: https://github.com/robbyrussell/oh-my-zsh#basic-installation
+echo "Installing oh-my-zsh"
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+echo "Remember to enable oh-my-zsh plugins in ~/.zshrc!"
