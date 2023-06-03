@@ -1,8 +1,9 @@
+#!/bin/env bash
 ## Update packages then upgrade
 echo "Update Ubuntu packages and followed by upgrading"
 sudo apt update
 sudo apt upgrade -y
-sudo apt -y install curl
+sudo apt -y install curl software-properties-common
 
 
 ## SSH Public Key
@@ -20,6 +21,7 @@ chmod 600 ~/.ssh/authorized_keys
 ## Figure out how to configure SSH daemon to enable login by public key
 ## See: https://www.thegeekstuff.com/2011/05/openssh-options
 echo "Setting up some SSH daemon configurations"
+echo "TODO: push custom sshd config"
 sudo service ssh status
 sudo service ssh reload
 
@@ -35,28 +37,26 @@ echo "Setting up Git configuration"
 curl -sLo ~/.gitconfig https://gist.githubusercontent.com/killedbymemory/753b50bd053808936fa18516e0b6f44f/raw/58887028007dd4f539abef8221dbdbf334332679/.gitconfig
 
 
-## Vundle && Vim && Install plugins from CLI
-## See: https://github.com/VundleVim/Vundle.vim
-echo "Setting up Vundle"
-mkdir -p ~/.vim/bundle
-git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+## Neovim
+echo "TODO: Installing Neovim"
+sudo apt install ripgrep fd-find
 
-echo "Setting up Vim configuration ~/.vimrc"
+
+echo "TODO: set Neovim configuration in ~/.config/nvim/"
 ## -s for silent
 ## -L for following redirect
 ## -o for output file
-curl -sLo ~/.vimrc https://gist.githubusercontent.com/killedbymemory/c1b8825c55c0551ed0f273400318a1ca/raw/2506a01be24cb5f0fbca5de62a180477609fbeba/.vimrc
+#curl -sLo ~/.config/nvim.vimrc https://gist.githubusercontent.com/killedbymemory/c1b8825c55c0551ed0f273400318a1ca/raw/2506a01be24cb5f0fbca5de62a180477609fbeba/.vimrc
 
-# Install plugins from CLI.
-# Unfortunately unavailable colorscheme prompt user response ;(
-vim +PluginInstall +qall
 
 ## Docker
 ## See: https://docs.docker.com/install/linux/docker-ce/ubuntu/
 ## Remove existing Docker
 echo "Setting up Docker"
 echo "Remove existing Docker installation"
-sudo apt -y remove docker docker-engine docker.io containerd runc
+for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do
+	sudo apt-get remove $pkg;
+done
 
 ## To ensure package installations done over https
 echo "Ensure Docker installation done over https"
@@ -64,27 +64,36 @@ sudo apt -y install \
     apt-transport-https \
     ca-certificates \
     curl \
-    gnupg-agent \
-    software-properties-common
+    gnupg
 
 ## Add Docker's official GPG and then verify
 echo "Add Docker's official GPG and verify"
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-sudo apt-key fingerprint 0EBFCD88
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
 
 ## Add Docker's stable repository to apt repo
 echo "Add Docker's stable repo"
-sudo add-apt-repository \
-   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-   $(lsb_release -cs) \
-   stable"
+echo \
+    "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+    "$(. /etc/os-release && echo "$UBUNTU_CODENAME")" stable" | \
+    sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
 ## Install Docker Community Edition (without specifying specific version)
 echo "Installing (latest) Docker CE"
-sudo apt update
-sudo apt -y install docker-ce docker-ce-cli containerd.io
+sudo apt update && \
+sudo apt -y install \
+    docker-ce \
+    docker-ce-cli \
+    containerd.io \
+    docker-buildx-plugin \
+    docker-compose-plugin
 
 ## Allow non-root user to run Docker
+## See: https://docs.docker.com/engine/install/linux-postinstall/
+echo "Creating the docker group"
+sudo groupadd docker
+
 echo "Allow non-root current user to run Docker"
 sudo usermod -aG docker $USER
 
@@ -110,3 +119,25 @@ echo "Setting up tmux configuration ~/.tmux.conf"
 ## -L for following redirect
 ## -o for output file
 curl -sLo ~/.tmux.conf https://gist.github.com/killedbymemory/6b474c113ab420985191222ce51f0265/raw/017423c0714b4886c6566face4cbb095e7b398b5/.tmux.conf
+
+
+## Golang
+## gvm to manage Golang installation and versioning
+## See: https://github.com/moovweb/gvm#installing
+echo "Installing gvm (Go installation version manager)"
+curl -s -S -L -o- https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer | bash
+echo "source $(echo $HOME)/.gvm/scripts/gvm" >> $(pwd)/.zshrc
+
+## See: A note on compiling Go 1.15+
+##      https://github.com/moovweb/gvm#a-note-on-compiling-go-15
+#source $(echo $HOME)/.gvm/scripts/gvm
+#gvm install go1.4 -B
+#gvm use go1.4
+
+## Node.js (JavaScript and TypeScript)
+## nvm manage Node.js installation and versioning
+## See: https://github.com/nvm-sh/nvm#installing-and-updating
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+
+
+
