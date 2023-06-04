@@ -126,13 +126,18 @@ curl -sLo ~/.tmux.conf https://gist.github.com/killedbymemory/6b474c113ab4209851
 ## See: https://github.com/moovweb/gvm#installing
 echo "Installing gvm (Go installation version manager)"
 curl -s -S -L -o- https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer | bash
-echo "source $(echo $HOME)/.gvm/scripts/gvm" >> $(pwd)/.zshrc
+echo "source $(echo $HOME)/.gvm/scripts/gvm" >> ~/.zshrc
 
 ## See: A note on compiling Go 1.15+
 ##      https://github.com/moovweb/gvm#a-note-on-compiling-go-15
 #source $(echo $HOME)/.gvm/scripts/gvm
 #gvm install go1.4 -B
 #gvm use go1.4
+
+echo "TODO: Installing direnv"
+#curl -sfL https://direnv.net/install.sh | bash
+#echo "eval \"$(direnv hook zsh)\"" >> ~/.zshrc
+
 
 ## Node.js (JavaScript and TypeScript)
 ## nvm manage Node.js installation and versioning
