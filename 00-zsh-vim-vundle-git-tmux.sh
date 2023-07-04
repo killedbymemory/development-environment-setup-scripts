@@ -118,8 +118,9 @@ echo "Setting up tmux configuration ~/.tmux.conf"
 ## -s for silent
 ## -L for following redirect
 ## -o for output file
-curl -sLo ~/.tmux.conf https://gist.github.com/killedbymemory/6b474c113ab420985191222ce51f0265/raw/017423c0714b4886c6566face4cbb095e7b398b5/.tmux.conf
-
+##curl -sLo ~/.tmux.conf https://gist.github.com/killedbymemory/6b474c113ab420985191222ce51f0265/raw/017423c0714b4886c6566face4cbb095e7b398b5/.tmux.conf
+git clone --depth=1 git@github.com:gpakosz/.tmux.git ~/.config/tmux
+cp ./tmux/tmux.conf.local ~/.config/tmux/tmux.conf.local
 
 ## Golang
 ## gvm to manage Golang installation and versioning
